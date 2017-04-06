@@ -7,9 +7,9 @@ Examples:
 <relative-time time=[[mytime]]></relative-time>
 
 <relative-time input-format="M/D/YY h:mm:ss A"
-                 time="4/6/17 2:34:58 PM UTC"
-                 input-timezone="UTC"
-                 output-format="fromNow"></relative-time>
+               time="4/6/17 2:34:58 PM UTC"
+               input-timezone="UTC"
+               output-format="fromNow"></relative-time>
 ```
 
 where `mytime` is any time object accepted by [moment.js](http://momentjs.com/docs/#/parsing/) by default
