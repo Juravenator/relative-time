@@ -13,3 +13,6 @@ Examples:
 ```
 
 where `mytime` is any time object accepted by [moment.js](http://momentjs.com/docs/#/parsing/) by default
+
+Note that this element assumes moment.js and moment-timezone.js are imported.
+The element makes no attempt to import them on its own.
