@@ -1,0 +1,171 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<!--
+`<relative-time>` receives a time string, and optionally formatting and timezone
+options, and converts it into another time string or, by default, relative time string
+Example:
+  <relative-time time=[[mytime]]></relative-time>
+  <relative-time input-format="M/D/YY h:mm:ss A"
+                 time="4/6/17 2:34:58 PM UTC"
+                 input-timezone="UTC"
+                 output-format="fromNow"></relative-time>
+where `mytime` is any time object accepted by [moment.js](http://momentjs.com/docs/#/parsing/) by default
+-->
+<dom-module id="relative-time">
+  <template>
+    <style>
+    :host {
+      display: inline
+    }
+    </style>
+    <span>[[renderedTime]]</span>
+  </template>
+  <script>
+  ! function(a, b) {
+    class c extends Polymer.Element {
+      static get is() {
+        return "relative-time"
+      }
+      static get properties() {
+        return {
+          /**
+           * date, as a string
+           */
+          time: {
+            type: String
+          },
+          /**
+           * formatting of the date
+           * can be a string, an array of string, or nothing
+           * http://momentjs.com/docs/#/parsing/string-format/
+           */
+          inputFormat: {
+            type: Object,
+            value: function() {
+              return null
+            }
+          },
+          /**
+           * language that this element will interpret/render
+           */
+          locale: {
+            type: String,
+            value: "en"
+          },
+          /**
+           * assumed time zone of the input string
+           * must match the name or abbreviation of a [moment.tz.Zone](http://momentjs.com/timezone/docs/#/zone-object/)
+           * default is the time zone of the user
+           */
+          inputTimezone: {
+            type: String,
+            value: function() {
+              var a = (new Date).getTimezoneOffset();
+              return moment.tz.names().map(a => moment.tz.zone(a)).find(
+                b => b.offsets.indexOf(a) > -1).name
+            }
+          },
+          /**
+           * time zone for the output string
+           * must match the name or abbreviation of a [moment.tz.Zone](http://momentjs.com/timezone/docs/#/zone-object/)
+           * default is the time zone of the user
+           */
+          outputTimezone: {
+            type: String,
+            value: function() {
+              var a = (new Date).getTimezoneOffset();
+              return moment.tz.names().map(a => moment.tz.zone(a)).find(
+                b => b.offsets.indexOf(a) > -1).name
+            }
+          },
+          /**
+           * time object as parsed by moment
+           */
+          _parsedTime: {
+            type: Object,
+            computed: "_parseTime(time, inputFormat, locale, inputTimezone, outputTimezone)"
+          },
+          /**
+           * formatting of the output string
+           * valid formats:
+           * 'fromNow': 12 minutes ago
+           * 'fromNowBrief': 12 minutes
+           * 'toNow': in 12 minutes
+           * 'calendar': today at 12 am
+           * a custom string, representing a format: http://momentjs.com/docs/#/displaying/format/
+           */
+          outputFormat: {
+            type: String,
+            value: "fromNow"
+          },
+          /**
+           * value used to make the element recalculate relative times
+           */
+          __renewer: {
+            type: Number,
+            value: 0
+          },
+          /**
+           * computed output string
+           */
+          renderedTime: {
+            type: String,
+            computed: "_getRelativeTime(_parsedTime, outputFormat, __renewer)"
+          },
+          /**
+           * a more expanded version of renderedTime
+           * used to render the title
+           * example:
+           * 12 minutes ago (today at 14:04)
+           */
+          title: {
+            type: String,
+            computed: "_getRelativeTitle(_parsedTime, __renewer)",
+            reflectToAttribute: !0
+          }
+        }
+      }
+      static get observers() {
+        return ["_manageTimer(_parsedTime, outputFormat)"]
+      }
+      constructor() {
+        super()
+      }
+      connectedCallback() {
+        super.connectedCallback()
+      }
+      _manageTimer(a, b) {
+        if (a && b && (clearTimeout(this.__timer), this._parsedTime)) {
+          this.__renewer = ++this.__renewer % 10;
+          var c = moment(),
+            d = 1e3;
+          c.diff(this._parsedTime, "days") > 0 ? // more than a day passed
+            d = 36e5 : c.diff(this._parsedTime, "hours") > 0 ? // more than an hour passed
+            d = 6e5 : c.diff(this._parsedTime, "minutes") > 0 && ( // more than a minute passed
+              d = 1e4), this.__timer = setTimeout(this._manageTimer.bind(
+              this), d)
+        }
+      }
+      _parseTime(a, b, c, d, e) {
+        if (a && c && d && e) {
+          var f = moment.tz(a, b, c, d);
+          return f.isValid() ? f.tz(e) : (console.warn(this,
+            `time input ${a} did not parse correctly`), null)
+        }
+      }
+      _getRelativeTime(a, b, c) {
+        return a && b && c ? "fromNow" == b ? a.fromNow() :
+          "fromNowBrief" == b ? a.fromNow(!0) : "toNow" == b ? a.toNow() :
+          "calendar" == b ? a.calendar() : a.format(b) : "unknown"
+      }
+      _getRelativeTitle(a, b) {
+        if (a && b) return a.calendar(null, {
+          sameElse: "MMM Do YYYY"
+        }) + "\n" + a.format()
+      }
+    }
+    customElements.define(c.is, c), b.true = a
+  }({}, function() {
+    return this
+  }());
+  </script>
+</dom-module>
