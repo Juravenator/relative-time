@@ -21,6 +21,8 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0-rc.3"
+    "polymer": "Polymer/polymer#^2.0.0-rc.3",
+    "moment": "^2.18.1",
+    "moment-timezone": "^0.5.13"
   }
 }
