@@ -39,10 +39,7 @@ where `mytime` is any time object accepted by [moment.js](http://momentjs.com/do
            * http://momentjs.com/docs/#/parsing/string-format/
            */
           inputFormat: {
-            type: Object,
-            value: function() {
-              return null
-            }
+            type: Object
           },
           /**
            * language that this element will interpret/render
@@ -154,9 +151,9 @@ where `mytime` is any time object accepted by [moment.js](http://momentjs.com/do
         }
       }
       _getRelativeTime(a, b, c) {
-        return a && b && c ? "fromNow" == b ? a.fromNow() :
-          "fromNowBrief" == b ? a.fromNow(!0) : "toNow" == b ? a.toNow() :
-          "calendar" == b ? a.calendar() : a.format(b) : "unknown"
+        return a && b ? "fromNow" == b ? a.fromNow() : "fromNowBrief" ==
+          b ? a.fromNow(!0) : "toNow" == b ? a.toNow() : "calendar" == b ?
+          a.calendar() : a.format(b) : "unknown"
       }
       _getRelativeTitle(a, b) {
         if (a && b) return a.calendar(null, {

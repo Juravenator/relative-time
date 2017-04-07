@@ -15,10 +15,7 @@ class RelativeTime extends Polymer.Element {
        * http://momentjs.com/docs/#/parsing/string-format/
        */
       inputFormat: {
-        type: Object,
-        value: function() {
-          return null
-        }
+        type: Object
       },
 
       /**
@@ -150,10 +147,10 @@ class RelativeTime extends Polymer.Element {
   }
 
   _getRelativeTime(_parsedTime, outputFormat, __renewer) {
-    if (!_parsedTime || !outputFormat || !__renewer) {
+    if (!_parsedTime || !outputFormat) {
       return "unknown";
     }
-    if (outputFormat == "fromNow") {
+    else if (outputFormat == "fromNow") {
       return _parsedTime.fromNow();
     }
     else if (outputFormat == "fromNowBrief") {
