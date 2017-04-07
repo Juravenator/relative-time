@@ -134,8 +134,9 @@ where `mytime` is any time object accepted by [moment.js](http://momentjs.com/do
         super.connectedCallback()
       }
       _manageTimer(a, b) {
-        if (a && b && (clearTimeout(this.__timer), this._parsedTime)) {
-          this.__renewer = ++this.__renewer % 10;
+        if (this._parsedTime && this.outputFormat) {
+          clearTimeout(this.__timer), this.__renewer = ++this.__renewer %
+            10;
           var c = moment(),
             d = 1e3;
           c.diff(this._parsedTime, "days") > 0 ? // more than a day passed

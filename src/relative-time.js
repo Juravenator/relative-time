@@ -118,26 +118,24 @@ class RelativeTime extends Polymer.Element {
   }
 
   _manageTimer(_parsedTime, outputFormat) {
-    if (!_parsedTime || !outputFormat) { return }
+    if (!this._parsedTime || !this.outputFormat) { return }
     clearTimeout(this.__timer);
 
-    if (this._parsedTime) {
-      this.__renewer = ++this.__renewer % 10;
+    this.__renewer = ++this.__renewer % 10;
 
-      var t0 = moment();
-      var newTimeout = 1000;
-      if (t0.diff(this._parsedTime, 'days') > 0) {         // more than a day passed
-        newTimeout = 1000 * 60 * 60;                       // update every hour
-      }
-      else if (t0.diff(this._parsedTime, 'hours') > 0) {   // more than an hour passed
-        newTimeout = 1000 * 60 * 10;                       // update every 10 minutes
-      }
-      else if (t0.diff(this._parsedTime, 'minutes') > 0) { // more than a minute passed
-        newTimeout = 1000 * 10;                            // update every 10 seconds
-      }
-
-      this.__timer = setTimeout( this._manageTimer.bind(this), newTimeout);
+    var t0 = moment();
+    var newTimeout = 1000;
+    if (t0.diff(this._parsedTime, 'days') > 0) {         // more than a day passed
+      newTimeout = 1000 * 60 * 60;                       // update every hour
     }
+    else if (t0.diff(this._parsedTime, 'hours') > 0) {   // more than an hour passed
+      newTimeout = 1000 * 60 * 10;                       // update every 10 minutes
+    }
+    else if (t0.diff(this._parsedTime, 'minutes') > 0) { // more than a minute passed
+      newTimeout = 1000 * 10;                            // update every 10 seconds
+    }
+
+    this.__timer = setTimeout( this._manageTimer.bind(this), newTimeout);
   }
 
   _parseTime(time, inputFormat, locale, inputTimezone, outputTimezone) {
