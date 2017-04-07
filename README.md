@@ -4,6 +4,7 @@ options, and converts it into another time string or, by default, relative time 
 Examples:
 
 ```html
+<!-- displays relative time, e.g: "5 minutes ago" -->
 <relative-time time=[[mytime]]></relative-time>
 
 <relative-time input-format="M/D/YY h:mm:ss A"
