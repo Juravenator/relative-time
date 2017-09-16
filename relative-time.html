@@ -24,6 +24,24 @@ where `mytime` is any time object accepted by [moment.js](http://momentjs.com/do
     static get is() {
       return 'relative-time'
     }
+    static get defaultTimezone() {
+      var timezoneOffset = new Date().getTimezoneOffset();
+      var timezones = moment.tz.names().map(name => moment.tz.zone(name));
+      if (timezones.length === 0) {
+        console.warn("moment.js has no timezones defined",
+          "https://momentjs.com/timezone/docs/#/data-loading/");
+      }
+      else {
+        var timezone = timezones.find(timezone => timezone.offsets.indexOf(
+          timezoneOffset) > -1);
+        if (!timezone) {
+          console.warn("no timezone found for offset", timezoneOffset);
+        }
+        else {
+          return timezone.name;
+        }
+      }
+    }
     static get properties() {
       return {
         /**
@@ -54,12 +72,7 @@ where `mytime` is any time object accepted by [moment.js](http://momentjs.com/do
          */
         inputTimezone: {
           type: String,
-          value: function() {
-            var timezoneOffset = new Date().getTimezoneOffset();
-            return moment.tz.names().map(name => moment.tz.zone(name)).find(
-              timezone => timezone.offsets.indexOf(timezoneOffset) >
-              -1).name;
-          }
+          value: RelativeTime.defaultTimezone
         },
         /**
          * time zone for the output string
@@ -68,12 +81,7 @@ where `mytime` is any time object accepted by [moment.js](http://momentjs.com/do
          */
         outputTimezone: {
           type: String,
-          value: function() {
-            var timezoneOffset = new Date().getTimezoneOffset();
-            return moment.tz.names().map(name => moment.tz.zone(name)).find(
-              timezone => timezone.offsets.indexOf(timezoneOffset) >
-              -1).name;
-          }
+          value: RelativeTime.defaultTimezone
         },
         /**
          * time object as parsed by moment
@@ -153,16 +161,28 @@ where `mytime` is any time object accepted by [moment.js](http://momentjs.com/do
       this.__timer = setTimeout(this._manageTimer.bind(this), newTimeout);
     }
     _parseTime(time, inputFormat, locale, inputTimezone, outputTimezone) {
-      if (!time || !locale || !inputTimezone || !outputTimezone) {
+      if (!time || !locale) {
         return
       }
-      var m = moment.tz(time, inputFormat, locale, inputTimezone);
-      if (m.isValid()) {
-        return m.tz(outputTimezone);
+      if (!inputTimezone || !outputTimezone) {
+        var m = moment(time, inputFormat, locale);
+        if (m.isValid()) {
+          return m;
+        }
+        else {
+          console.warn(this, `time input ${time} did not parse correctly`)
+          return null;
+        }
       }
       else {
-        console.warn(this, `time input ${time} did not parse correctly`)
-        return null;
+        var m = moment.tz(time, inputFormat, locale, inputTimezone);
+        if (m.isValid()) {
+          return m.tz(outputTimezone);
+        }
+        else {
+          console.warn(this, `time input ${time} did not parse correctly`)
+          return null;
+        }
       }
     }
     _getRelativeTime(_parsedTime, outputFormat, __renewer) {

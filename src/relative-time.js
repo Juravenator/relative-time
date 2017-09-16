@@ -1,5 +1,21 @@
 class RelativeTime extends Polymer.Element {
   static get is() { return 'relative-time' }
+  static get defaultTimezone() {
+    var timezoneOffset = new Date().getTimezoneOffset();
+    var timezones = moment.tz.names().map( name => moment.tz.zone(name) );
+    if (timezones.length === 0) {
+      console.warn("moment.js has no timezones defined", "https://momentjs.com/timezone/docs/#/data-loading/");
+    }
+    else {
+      var timezone = timezones.find( timezone => timezone.offsets.indexOf(timezoneOffset)>-1 );
+      if (!timezone) {
+        console.warn("no timezone found for offset", timezoneOffset);
+      }
+      else {
+        return timezone.name;
+      }
+    }
+  }
   static get properties() {
     return {
       /**
@@ -33,10 +49,7 @@ class RelativeTime extends Polymer.Element {
        */
       inputTimezone: {
         type: String,
-        value: function() {
-          var timezoneOffset = new Date().getTimezoneOffset();
-          return moment.tz.names().map( name => moment.tz.zone(name) ).find( timezone => timezone.offsets.indexOf(timezoneOffset)>-1 ).name;
-        }
+        value: RelativeTime.defaultTimezone
       },
       /**
        * time zone for the output string
@@ -45,10 +58,7 @@ class RelativeTime extends Polymer.Element {
        */
       outputTimezone: {
         type: String,
-        value: function() {
-          var timezoneOffset = new Date().getTimezoneOffset();
-          return moment.tz.names().map( name => moment.tz.zone(name) ).find( timezone => timezone.offsets.indexOf(timezoneOffset)>-1 ).name;
-        }
+        value: RelativeTime.defaultTimezone
       },
 
       /**
@@ -136,13 +146,24 @@ class RelativeTime extends Polymer.Element {
   }
 
   _parseTime(time, inputFormat, locale, inputTimezone, outputTimezone) {
-    if (!time || !locale || !inputTimezone || !outputTimezone) { return }
-    var m = moment.tz(time, inputFormat, locale, inputTimezone);
-    if (m.isValid()) {
-      return m.tz(outputTimezone);
-    } else {
-      console.warn(this, `time input ${time} did not parse correctly`)
-      return null;
+    if (!time || !locale) { return }
+    if (!inputTimezone || !outputTimezone) {
+      var m = moment(time, inputFormat, locale);
+      if (m.isValid()) {
+        return m;
+      } else {
+        console.warn(this, `time input ${time} did not parse correctly`)
+        return null;
+      }
+    }
+    else {
+      var m = moment.tz(time, inputFormat, locale, inputTimezone);
+      if (m.isValid()) {
+        return m.tz(outputTimezone);
+      } else {
+        console.warn(this, `time input ${time} did not parse correctly`)
+        return null;
+      }
     }
   }
 
