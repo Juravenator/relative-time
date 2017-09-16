@@ -42,26 +42,6 @@ var config = {
     }
   },
 
-  /*
-    Process JavaScript
-   */
-  uglify: {
-    options: {
-      srewIE8: true,
-      mangleProperties: false,
-      mangle: {},
-      sourceMap: false,
-      wrap: true,
-      ASCIIOnly: true,
-      preserveComments: /\**/
-    },
-    build: {
-      files: {
-        "_build/relative-time.js": "_build/relative-time.js"
-      }
-    }
-  },
-
   htmlmin: {
     options: {
       removeComments: true,
@@ -109,7 +89,6 @@ module.exports = grunt => {
   grunt.initConfig(config);
 
   grunt.loadNpmTasks('grunt-import');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-postcss');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-sass');
@@ -117,6 +96,6 @@ module.exports = grunt => {
   grunt.loadNpmTasks('grunt-prettify');
   grunt.loadNpmTasks('grunt-contrib-htmlmin');
 
-  grunt.registerTask('debug', ['import', 'sass', 'postcss', 'uglify', 'htmlmin', 'inline', 'prettify'])
+  grunt.registerTask('debug', ['import', 'sass', 'postcss', 'htmlmin', 'inline', 'prettify'])
   grunt.registerTask('default', ['debug', 'clean'])
 };
